@@ -3,46 +3,58 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rock Paper Scissors</title>
+<title>Lovely Rock Paper Scissors 💖</title>
 <style>
+:root {
+  --main-pink: #ff69b4; /* Parlaq Çəhrayı */
+  --light-pink: #fff5f7; /* Çox açıq çəhrayı fon */
+  --button-bg: #ffe4e8; /* Düymələr üçün yumşaq çəhrayı */
+  --dark-pink: #e75480; /* Tünd çəhrayı mətn və hover üçün */
+  --border-color: #ffb6c1; /* Açıq çəhrayı sərhədlər */
+  --text-color: #333; /* Yumşaq qara mətn */
+  --bg-color: #fff; /* Təmiz ağ fon */
+}
 *{box-sizing:border-box}
 body{
   margin:0; min-height:100vh; display:grid; place-items:center;
-  background:#fff; color:#111; font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg-color); color:var(--text-color); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 .wrap{width:min(92%,430px); text-align:center}
-h1{font-size:25px;font-weight:500;margin:0 0 8px;letter-spacing:-.5px}
-.note{font-size:13px;color:#777;margin:0 0 38px}
-.score{font-size:13px;margin-bottom:28px;color:#555}
-.score b{color:#111;font-weight:500}
-.choices{display:flex;justify-content:center;gap:10px}
+h1{font-size:28px;font-weight:600;margin:0 0 10px;letter-spacing:-.5px;color:var(--main-pink)}
+.note{font-size:14px;color:var(--dark-pink);margin:0 0 35px;font-weight:500}
+.score{font-size:14px;margin-bottom:28px;color:#666}
+.score b{color:var(--main-pink);font-weight:600}
+.choices{display:flex;justify-content:center;gap:12px}
 .choice{
-  width:105px;height:105px;border:1px solid #111;background:#fff;
-  font-size:34px;cursor:pointer;border-radius:0;transition:.12s;
+  width:110px;height:110px;border:2px solid var(--border-color);background:var(--button-bg);
+  font-size:36px;cursor:pointer;border-radius:18px;transition: transform 0.12s, background-color 0.12s, color 0.12s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-.choice:hover{background:#111;color:#fff}
-.choice span{display:block;font-size:11px;margin-top:9px;letter-spacing:.4px}
-.result{height:55px;padding-top:23px;font-size:13px;color:#555}
+.choice:hover{background:var(--main-pink);color:#fff; border-color: var(--main-pink); transform: scale(1.05);}
+.choice span{display:block;font-size:12px;margin-top:7px;letter-spacing:.4px;color:#777}
+.choice:hover span{color: #fff}
+.result{height:60px;padding-top:25px;font-size:14px;color:#555}
 .hidden{display:none}
 .final{padding:10px}
-.final h2{font-size:25px;font-weight:500;margin:0 0 18px}
-.final p{font-size:14px;line-height:1.6;color:#555;margin:0 auto 28px;max-width:340px}
-.final-buttons{display:flex;justify-content:center;gap:10px;position:relative;height:48px}
+.final h2{font-size:28px;font-weight:600;margin:0 0 20px;color:var(--main-pink)}
+.final p{font-size:15px;line-height:1.7;color:#444;margin:0 auto 32px;max-width:360px}
+.final-buttons{display:flex;justify-content:center;gap:15px;position:relative;height:52px}
 .final button{
-  height:46px;padding:0 22px;border:1px solid #111;background:#fff;
-  color:#111;font-size:13px;cursor:pointer;
+  height:50px;padding:0 26px;border:2px solid var(--border-color);background:#fff;
+  color:var(--main-pink);font-size:14px;cursor:pointer;border-radius:25px;font-weight:500; transition: background 0.15s, color 0.15s;
 }
-.final .yes{background:#111;color:#fff}
+.final .yes{background:var(--main-pink);color:#fff; border-color: var(--main-pink);}
+.final .yes:hover{background:var(--dark-pink); border-color: var(--dark-pink)}
 #noBtn{position:relative}
-.hint{font-size:11px!important;color:#999!important;margin-top:24px!important}
+.hint{font-size:12px!important;color:#999!important;margin-top:28px!important}
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <section id="game">
-  <h1>Rock Paper Scissors</h1>
-  <p class="note">Best of three.</p>
+  <h1>Rock Paper Scissors 💖</h1>
+  <p class="note">Best of three? 😉</p>
 
   <div class="score">You <b id="you">0</b> &nbsp;—&nbsp; Me <b id="me">0</b></div>
 
@@ -56,14 +68,14 @@ h1{font-size:25px;font-weight:500;margin:0 0 8px;letter-spacing:-.5px}
 </section>
 
 <section id="final" class="final hidden">
-  <h2>One more thing.</h2>
+  <h2>Bir balaca sürpriz... 💖</h2>
   <p>
-    I know this is a little random, but I think you seem interesting.<br>
-    Would you let me take you for a coffee sometime?
+    Sözün düzü, bu oyun mənim üçün sadəcə bir bəhanə idi... Səni tanıdığım andan etibarən maraqlı və fərqli biri olduğunu düşündüm. Məncə, səninlə bir fincan qəhvə içmək çox xoş olardı... <br>
+    Bəlkə bu şirin təklifi qəbul edəsən? 😉☕
   </p>
 
   <div class="final-buttons">
-    <button class="yes" onclick="yes()">Yes, why not?</button>
+    <button class="yes" onclick="yes()">Yes, why not? 😊</button>
     <button id="noBtn" onmouseenter="escapeNo()" ontouchstart="escapeNo()">No</button>
   </div>
 
@@ -104,7 +116,7 @@ function escapeNo(){
 }
 
 function yes(){
-  document.querySelector(".final-buttons").innerHTML='<div style="font-size:15px">I knew you had good judgment. ☕</div>';
+  document.querySelector(".final-buttons").innerHTML='<div style="font-size:16px; color: var(--main-pink);">I knew you had good judgment. ☕💖</div>';
   document.getElementById("hint").classList.add("hidden");
 }
 </script>
