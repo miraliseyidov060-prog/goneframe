@@ -28,6 +28,7 @@
 
   .pick { transition:all .2s ease; border:2px solid transparent; }
   .pick:active { transform:scale(.94); }
+  .pick.selected { border-color:#FF8A8A; background:rgba(255,138,138,.10); }
 
   .blob { position:fixed; border-radius:9999px; filter:blur(60px); opacity:.5; z-index:0; }
 
@@ -77,10 +78,10 @@
       <section id="debt" class="screen">
         <div class="glass rounded-3xl shadow-xl p-8 w-full text-center">
           <div class="text-5xl mb-4 floaty">🤍</div>
-          <h2 class="text-xl font-extrabold mb-2">You won.</h2>
+          <h2 class="text-xl font-extrabold mb-2">One last thing.</h2>
           <div class="thread my-4"></div>
-          <p class="text-ink/70 leading-relaxed mb-2">So... I owe you something now.</p>
-          <p class="text-ink/60 leading-relaxed mb-7 text-sm">And I think it should be a little date.</p>
+          <p class="text-ink/70 leading-relaxed mb-2">You won, so I owe you something now.</p>
+          <p class="text-ink/60 leading-relaxed mb-7 text-sm">And I think it should be a little date. Ready?</p>
 
           <div class="relative h-40">
             <button id="yesBtn" onclick="go('yay')"
@@ -96,19 +97,57 @@
         </div>
       </section>
 
+      <!-- QUIZ -->
+      <section id="quiz" class="screen">
+        <div class="glass rounded-3xl shadow-xl p-7 w-full">
+          <p class="text-xs tracking-[.3em] text-ink/40 mb-1 text-center">GETTING TO KNOW YOU</p>
+          <h2 class="text-lg font-extrabold mb-1 text-center">A few tiny questions</h2>
+          <div class="thread my-4"></div>
+
+          <p class="font-semibold mb-3 text-sm">Favorite color?</p>
+          <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="pick glass rounded-2xl p-3 cursor-pointer text-sm" data-q="color" data-val="Soft pink 🌸" onclick="pickQ(this,'color')">🌸 Soft pink</div>
+            <div class="pick glass rounded-2xl p-3 cursor-pointer text-sm" data-q="color" data-val="Calm blue 🌊" onclick="pickQ(this,'color')">🌊 Calm blue</div>
+            <div class="pick glass rounded-2xl p-3 cursor-pointer text-sm" data-q="color" data-val="Warm beige 🤎" onclick="pickQ(this,'color')">🤎 Warm beige</div>
+            <div class="pick glass rounded-2xl p-3 cursor-pointer text-sm" data-q="color" data-val="Deep green 🌿" onclick="pickQ(this,'color')">🌿 Deep green</div>
+          </div>
+
+          <p class="font-semibold mb-3 text-sm">Which animals do you love?</p>
+          <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="pick glass rounded-2xl p-3 cursor-pointer text-sm" data-q="animal" data-val="Cats 🐱" onclick="pickQ(this,'animal')">🐱 Cats</div>
+            <div class="pick glass rounded-2xl p-3 cursor-pointer text-sm" data-q="animal" data-val="Dogs 🐶" onclick="pickQ(this,'animal')">🐶 Dogs</div>
+            <div class="pick glass rounded-2xl p-3 cursor-pointer text-sm" data-q="animal" data-val="Bunnies 🐰" onclick="pickQ(this,'animal')">🐰 Bunnies</div>
+            <div class="pick glass rounded-2xl p-3 cursor-pointer text-sm" data-q="animal" data-val="Birds 🐦" onclick="pickQ(this,'animal')">🐦 Birds</div>
+          </div>
+
+          <p class="font-semibold mb-3 text-sm">Perfect little escape?</p>
+          <div class="grid grid-cols-2 gap-3 mb-7">
+            <div class="pick glass rounded-2xl p-3 cursor-pointer text-sm" data-q="vibe" data-val="Cozy café ☕" onclick="pickQ(this,'vibe')">☕ Cozy café</div>
+            <div class="pick glass rounded-2xl p-3 cursor-pointer text-sm" data-q="vibe" data-val="Sea breeze 🌊" onclick="pickQ(this,'vibe')">🌊 Sea breeze</div>
+            <div class="pick glass rounded-2xl p-3 cursor-pointer text-sm" data-q="vibe" data-val="City lights 🌇" onclick="pickQ(this,'vibe')">🌇 City lights</div>
+            <div class="pick glass rounded-2xl p-3 cursor-pointer text-sm" data-q="vibe" data-val="Quiet park 🌳" onclick="pickQ(this,'vibe')">🌳 Quiet park</div>
+          </div>
+
+          <button id="quizBtn" disabled onclick="go('debt')"
+            class="w-full bg-accent/40 text-white font-semibold py-4 rounded-2xl transition active:scale-95">
+            Done →
+          </button>
+        </div>
+      </section>
+
       <!-- YAY -->
       <section id="yay" class="screen">
         <div class="glass rounded-3xl shadow-xl p-8 w-full text-center">
           <div class="text-5xl mb-4 floaty">✨</div>
-          <h2 class="text-xl font-extrabold mb-3">Perfect.</h2>
+          <h2 class="text-xl font-extrabold mb-3">Lovely.</h2>
           <div class="thread my-4"></div>
           <p class="text-ink/70 leading-relaxed mb-4">
             I knew you wouldn't let this one slip away.
           </p>
           <p class="text-ink/60 leading-relaxed text-sm">
-            So, to get to know each other a little better —
-            just type the first date that works for you in the chat.
-            That's our date. 🤍
+            So... shall we keep getting to know each other —
+            over a little date?
+            Just type the first date that works for you in the chat. 🤍
           </p>
         </div>
       </section>
@@ -141,7 +180,7 @@
 
     setTimeout(() => {
       if (round >= TOTAL) {
-        go('debt');
+        go('quiz');
       } else {
         round++;
         roundEl.textContent = `Round ${round} of ${TOTAL}`;
@@ -159,22 +198,41 @@
     window.scrollTo({ top:0, behavior:'smooth' });
   }
 
-  // dodging "Not ready" button
+  // quiz
+  const quiz = { color:null, animal:null, vibe:null };
+  function pickQ(el, key) {
+    document.querySelectorAll(`[data-q="${key}"]`).forEach(n => n.classList.remove('selected'));
+    el.classList.add('selected');
+    quiz[key] = el.dataset.val;
+    if (quiz.color && quiz.animal && quiz.vibe) {
+      const b = document.getElementById('quizBtn');
+      b.disabled = false;
+      b.classList.replace('bg-accent/40','bg-accent');
+      b.classList.add('shadow-lg','shadow-accent/30');
+    }
+  }
+
+  // dodging "Not ready" button — only on click/tap, small nearby jump, stays on screen
   const noBtn = document.getElementById('noBtn');
-  function dodge() {
-    const pad = 20;
-    const w = window.innerWidth, h = window.innerHeight;
+  function dodge(e) {
+    if (e) e.preventDefault();
+    const pad = 12;
+    const container = noBtn.parentElement; // the relative h-40 box
+    const rect = container.getBoundingClientRect();
     const bw = noBtn.offsetWidth, bh = noBtn.offsetHeight;
-    const x = Math.random() * (w - bw - pad*2) + pad;
-    const y = Math.random() * (h - bh - pad*2) + pad;
-    noBtn.style.position = 'fixed';
+
+    const maxX = Math.max(0, rect.width - bw - pad);
+    const maxY = Math.max(0, rect.height - bh - pad);
+    const x = Math.random() * maxX + pad/2;
+    const y = Math.random() * maxY + pad/2;
+
+    noBtn.style.position = 'absolute';
     noBtn.style.left = x + 'px';
     noBtn.style.top = y + 'px';
     noBtn.style.transform = 'none';
   }
-  noBtn.addEventListener('mouseover', dodge);
-  noBtn.addEventListener('click', (e) => { e.preventDefault(); dodge(); });
-  noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodge(); }, { passive:false });
+  noBtn.addEventListener('click', dodge);
+  noBtn.addEventListener('touchstart', dodge, { passive:false });
 </script>
 </body>
 </html>
