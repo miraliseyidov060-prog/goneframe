@@ -1,124 +1,180 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lovely Rock Paper Scissors 💖</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rock Paper Scissors</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      fontFamily: { sans: ['Plus Jakarta Sans','sans-serif'] },
+      colors: { cream:'#FFF8F6', accent:'#FF8A8A', ink:'#2D2D2D' },
+    }},
+  };
+</script>
 <style>
-:root {
-  --main-pink: #ff69b4; /* Parlaq Çəhrayı */
-  --light-pink: #fff5f7; /* Çox açıq çəhrayı fon */
-  --button-bg: #ffe4e8; /* Düymələr üçün yumşaq çəhrayı */
-  --dark-pink: #e75480; /* Tünd çəhrayı mətn və hover üçün */
-  --border-color: #ffb6c1; /* Açıq çəhrayı sərhədlər */
-  --text-color: #333; /* Yumşaq qara mətn */
-  --bg-color: #fff; /* Təmiz ağ fon */
-}
-*{box-sizing:border-box}
-body{
-  margin:0; min-height:100vh; display:grid; place-items:center;
-  background:var(--bg-color); color:var(--text-color); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-.wrap{width:min(92%,430px); text-align:center}
-h1{font-size:28px;font-weight:600;margin:0 0 10px;letter-spacing:-.5px;color:var(--main-pink)}
-.note{font-size:14px;color:var(--dark-pink);margin:0 0 35px;font-weight:500}
-.score{font-size:14px;margin-bottom:28px;color:#666}
-.score b{color:var(--main-pink);font-weight:600}
-.choices{display:flex;justify-content:center;gap:12px}
-.choice{
-  width:110px;height:110px;border:2px solid var(--border-color);background:var(--button-bg);
-  font-size:36px;cursor:pointer;border-radius:18px;transition: transform 0.12s, background-color 0.12s, color 0.12s;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-}
-.choice:hover{background:var(--main-pink);color:#fff; border-color: var(--main-pink); transform: scale(1.05);}
-.choice span{display:block;font-size:12px;margin-top:7px;letter-spacing:.4px;color:#777}
-.choice:hover span{color: #fff}
-.result{height:60px;padding-top:25px;font-size:14px;color:#555}
-.hidden{display:none}
-.final{padding:10px}
-.final h2{font-size:28px;font-weight:600;margin:0 0 20px;color:var(--main-pink)}
-.final p{font-size:15px;line-height:1.7;color:#444;margin:0 auto 32px;max-width:360px}
-.final-buttons{display:flex;justify-content:center;gap:15px;position:relative;height:52px}
-.final button{
-  height:50px;padding:0 26px;border:2px solid var(--border-color);background:#fff;
-  color:var(--main-pink);font-size:14px;cursor:pointer;border-radius:25px;font-weight:500; transition: background 0.15s, color 0.15s;
-}
-.final .yes{background:var(--main-pink);color:#fff; border-color: var(--main-pink);}
-.final .yes:hover{background:var(--dark-pink); border-color: var(--dark-pink)}
-#noBtn{position:relative}
-.hint{font-size:12px!important;color:#999!important;margin-top:28px!important}
+  body { font-family:'Plus Jakarta Sans',sans-serif; }
+
+  .screen { opacity:0; transform:translateY(20px); transition:opacity .5s ease, transform .5s ease;
+            pointer-events:none; position:absolute; inset:0; display:flex; }
+  .screen.active { opacity:1; transform:translateY(0); pointer-events:auto; position:relative; }
+
+  .glass { background:rgba(255,255,255,.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+           border:1px solid rgba(255,255,255,.6); }
+
+  .pick { transition:all .2s ease; border:2px solid transparent; }
+  .pick:active { transform:scale(.94); }
+
+  .blob { position:fixed; border-radius:9999px; filter:blur(60px); opacity:.5; z-index:0; }
+
+  @keyframes floaty { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+  .floaty { animation:floaty 3.5s ease-in-out infinite; }
+
+  #noBtn { transition: transform .18s ease, left .18s ease, top .18s ease; }
+
+  /* very subtle art line */
+  .thread { width:40px; height:1px; background:#2D2D2D22; margin:0 auto; }
 </style>
 </head>
-<body>
-<div class="wrap">
+<body class="bg-cream text-ink min-h-screen relative overflow-hidden">
 
-<section id="game">
-  <h1>Rock Paper Scissors 💖</h1>
-  <p class="note">Best of three? 😉</p>
+  <div class="blob w-72 h-72 bg-[#FFD8D8] -top-16 -left-16"></div>
+  <div class="blob w-72 h-72 bg-[#FFE9D6] bottom-0 -right-16"></div>
 
-  <div class="score">You <b id="you">0</b> &nbsp;—&nbsp; Me <b id="me">0</b></div>
+  <main class="relative z-10 max-w-md mx-auto min-h-screen px-5 py-8 flex items-center">
+    <div class="w-full relative">
 
-  <div class="choices">
-    <button class="choice" onclick="play('rock')">✊<span>ROCK</span></button>
-    <button class="choice" onclick="play('paper')">✋<span>PAPER</span></button>
-    <button class="choice" onclick="play('scissors')">✌︎<span>SCISSORS</span></button>
-  </div>
+      <!-- GAME -->
+      <section id="game" class="screen active">
+        <div class="glass rounded-3xl shadow-xl p-8 w-full text-center">
+          <p class="text-xs tracking-[.35em] text-ink/40 mb-1">A SMALL GAME</p>
+          <h1 class="text-2xl font-extrabold mb-1">Nərmin, let's play ✨</h1>
+          <p id="round" class="text-xs text-ink/40 mb-1">Round 1 of 3</p>
+          <div class="thread my-4"></div>
 
-  <div id="result" class="result">Choose one.</div>
-</section>
+          <div class="flex justify-center gap-6 mb-6 text-4xl">
+            <div><div id="youHand" class="floaty">✊</div><p class="text-[11px] text-ink/40 mt-1">You</p></div>
+            <div class="self-center text-ink/30 text-xl">vs</div>
+            <div><div id="meHand" class="floaty">✊</div><p class="text-[11px] text-ink/40 mt-1">Me</p></div>
+          </div>
 
-<section id="final" class="final hidden">
-  <h2>Bir balaca sürpriz... 💖</h2>
-  <p>
-    Sözün düzü, bu oyun mənim üçün sadəcə bir bəhanə idi... Səni tanıdığım andan etibarən maraqlı və fərqli biri olduğunu düşündüm. Məncə, səninlə bir fincan qəhvə içmək çox xoş olardı... <br>
-    Bəlkə bu şirin təklifi qəbul edəsən? 😉☕
-  </p>
+          <p id="result" class="h-6 font-semibold text-ink/70 mb-1">Your move</p>
+          <p id="score" class="text-xs text-ink/40 mb-4">You 0 · Me 0</p>
 
-  <div class="final-buttons">
-    <button class="yes" onclick="yes()">Yes, why not? 😊</button>
-    <button id="noBtn" onmouseenter="escapeNo()" ontouchstart="escapeNo()">No</button>
-  </div>
+          <div class="grid grid-cols-3 gap-3">
+            <button onclick="play('rock')" class="pick glass rounded-2xl py-5 text-3xl active:scale-90">✊</button>
+            <button onclick="play('paper')" class="pick glass rounded-2xl py-5 text-3xl active:scale-90">✋</button>
+            <button onclick="play('scissors')" class="pick glass rounded-2xl py-5 text-3xl active:scale-90">✌️</button>
+          </div>
+        </div>
+      </section>
 
-  <p id="hint" class="hint hidden">That button was never really an option.</p>
-</section>
+      <!-- DEBT -->
+      <section id="debt" class="screen">
+        <div class="glass rounded-3xl shadow-xl p-8 w-full text-center">
+          <div class="text-5xl mb-4 floaty">🤍</div>
+          <h2 class="text-xl font-extrabold mb-2">You won.</h2>
+          <div class="thread my-4"></div>
+          <p class="text-ink/70 leading-relaxed mb-2">So... I owe you something now.</p>
+          <p class="text-ink/60 leading-relaxed mb-7 text-sm">And I think it should be a little date.</p>
 
-</div>
+          <div class="relative h-40">
+            <button id="yesBtn" onclick="go('yay')"
+              class="absolute left-1/2 -translate-x-1/2 top-2 bg-accent text-white font-semibold px-8 py-4 rounded-2xl shadow-lg shadow-accent/30 active:scale-95 transition">
+              I'm ready
+            </button>
+            <button id="noBtn"
+              class="absolute px-6 py-3 rounded-2xl glass text-ink/60 font-medium"
+              style="left:50%; top:90px; transform:translateX(-50%);">
+              Not ready
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- YAY -->
+      <section id="yay" class="screen">
+        <div class="glass rounded-3xl shadow-xl p-8 w-full text-center">
+          <div class="text-5xl mb-4 floaty">✨</div>
+          <h2 class="text-xl font-extrabold mb-3">Perfect.</h2>
+          <div class="thread my-4"></div>
+          <p class="text-ink/70 leading-relaxed mb-4">
+            I knew you wouldn't let this one slip away.
+          </p>
+          <p class="text-ink/60 leading-relaxed text-sm">
+            So, to get to know each other a little better —
+            just type the first date that works for you in the chat.
+            That's our date. 🤍
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
 
 <script>
-let you=0,me=0;
-const choices=["rock","paper","scissors"];
+  const beats = { rock:'scissors', paper:'rock', scissors:'paper' };
+  const emoji = { rock:'✊', paper:'✋', scissors:'✌️' };
+  const you = document.getElementById('youHand');
+  const me  = document.getElementById('meHand');
+  const res = document.getElementById('result');
+  const roundEl = document.getElementById('round');
+  const scoreEl = document.getElementById('score');
 
-function play(c){
-  if(you>=2||me>=2)return;
-  const a=choices[Math.floor(Math.random()*3)];
-  if(c!==a){
-    if((c==="rock"&&a==="scissors")||(c==="paper"&&a==="rock")||(c==="scissors"&&a==="paper")) you++;
-    else me++;
+  let round = 1, wins = 0, busy = false;
+  const TOTAL = 3;
+
+  function play(choice) {
+    if (busy || round > TOTAL) return;
+    busy = true;
+    // she always wins: computer plays whatever she beats
+    const comp = beats[choice];
+    you.textContent = emoji[choice];
+    me.textContent  = emoji[comp];
+    wins++;
+    res.textContent = 'You win 🌸';
+    scoreEl.textContent = `You ${wins} · Me 0`;
+
+    setTimeout(() => {
+      if (round >= TOTAL) {
+        go('debt');
+      } else {
+        round++;
+        roundEl.textContent = `Round ${round} of ${TOTAL}`;
+        res.textContent = 'Your move';
+        you.textContent = '✊';
+        me.textContent = '✊';
+        busy = false;
+      }
+    }, 900);
   }
-  document.getElementById("you").textContent=you;
-  document.getElementById("me").textContent=me;
 
-  const r=document.getElementById("result");
-  r.textContent=c===a ? "Draw." : you>me ? "You win this round." : "I win this round.";
+  function go(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
 
-  if(you===2||me===2) setTimeout(()=>{
-    document.getElementById("game").classList.add("hidden");
-    document.getElementById("final").classList.remove("hidden");
-  },500);
-}
-
-function escapeNo(){
-  const b=document.getElementById("noBtn");
-  const x=(Math.random()*180)-90;
-  const y=(Math.random()*70)-35;
-  b.style.transform=`translate(${x}px,${y}px)`;
-  document.getElementById("hint").classList.remove("hidden");
-}
-
-function yes(){
-  document.querySelector(".final-buttons").innerHTML='<div style="font-size:16px; color: var(--main-pink);">I knew you had good judgment. ☕💖</div>';
-  document.getElementById("hint").classList.add("hidden");
-}
+  // dodging "Not ready" button
+  const noBtn = document.getElementById('noBtn');
+  function dodge() {
+    const pad = 20;
+    const w = window.innerWidth, h = window.innerHeight;
+    const bw = noBtn.offsetWidth, bh = noBtn.offsetHeight;
+    const x = Math.random() * (w - bw - pad*2) + pad;
+    const y = Math.random() * (h - bh - pad*2) + pad;
+    noBtn.style.position = 'fixed';
+    noBtn.style.left = x + 'px';
+    noBtn.style.top = y + 'px';
+    noBtn.style.transform = 'none';
+  }
+  noBtn.addEventListener('mouseover', dodge);
+  noBtn.addEventListener('click', (e) => { e.preventDefault(); dodge(); });
+  noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodge(); }, { passive:false });
 </script>
 </body>
 </html>
